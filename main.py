@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import requests
 import json
 import uuid
@@ -29,6 +30,7 @@ class TricountAPI:
             "client_public_key": self.rsa_public_key_pem,
             "device_description": "Android"
         }
+        print("authenticating...")
         response = requests.post(auth_url, json=auth_payload, headers=self.headers)
         response.raise_for_status()
         auth_data = response.json()
@@ -40,6 +42,7 @@ class TricountAPI:
 
     def fetch_tricount_data(self, tricount_key):
         tricount_url = f"{self.base_url}/v1/user/{self.user_id}/registry?public_identifier_token={tricount_key}"
+        print("fetching data...")
         response = requests.get(tricount_url, headers=self.headers)
         response.raise_for_status()
         return response.json()
@@ -142,16 +145,16 @@ class TricountHandler:
             ", ".join([attach["urls"][0]["url"] for attach in transaction["Attachments"] if "urls" in attach and attach["urls"]]),
             transaction["Category"]
         ]
-        
+
         return row_data
 
     @staticmethod
     def prepare_sesterce_transaction_data(transaction, members):
         """
         Helper method to prepare the data for each transaction in the sesterce format.
-        A row contains: 
-        Date, Title, 
-        Paid by Member A, Paid by Member B, ... , 
+        A row contains:
+        Date, Title,
+        Paid by Member A, Paid by Member B, ... ,
         Paid for Member A, Paid for Member B, ... ,
         Currency, Category
         """
@@ -191,7 +194,7 @@ class TricountHandler:
             transaction["Currency"],
             category
         ]
-        
+
         return row_data
 
     @staticmethod
@@ -269,28 +272,27 @@ class TricountHandler:
 
 
 if __name__ == "__main__":
+    import sys
+
+    if len(sys.argv) < 2:
+        print(f"USAGE: {sys.argv[0]} key", file=sys.stderr)
+        sys.exit(1)
+
     # example key
-    tricount_key = "tISWyMCgrIMgFuxudZ"
+    tricount_key = sys.argv[1]
 
     api = TricountAPI()
     api.authenticate()
     data = api.fetch_tricount_data(tricount_key)
 
     # save data to local file
-    with open('response_data.json', 'w') as f:
+    with open(f'response_data_{tricount_key}.json', 'w') as f:
         json.dump(data, f, indent=2)
-
-    # load data from local file
-    #with open('response_data.json', 'r') as f:
-    #    data = json.load(f)
 
     handler = TricountHandler()
     tricount_title = handler.get_tricount_title(data)
 
-    memberships, transactions = handler.parse_tricount_data(data)
+    _, transactions = handler.parse_tricount_data(data)
 
     handler.write_to_csv(transactions, file_name=f"Transactions {tricount_title}")
 
-    #handler.write_to_excel(transactions, file_name=f"Transactions {tricount_title}")
-    #handler.write_to_sesterce_csv(memberships, transactions, f"Transaction {tricount_title} (Sesterce)")
-    #handler.download_attachments(transactions, download_folder=f"Attachments {tricount_title}")
