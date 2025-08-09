@@ -271,28 +271,54 @@ class TricountHandler:
             print(f"Transactions have been saved to {file_name}.csv.")
 
 
+def usage():
+    print(f"""USAGE: {sys.argv[0]} key [OPTIONS...]
+
+    where OPTIONS are:
+
+    --csv : export as csv
+    --raw : store raw data from response
+    --help: print this text""", file=sys.stderr)
+    sys.exit(1)
+
+
 if __name__ == "__main__":
     import sys
 
     if len(sys.argv) < 2:
-        print(f"USAGE: {sys.argv[0]} key", file=sys.stderr)
-        sys.exit(1)
+        usage()
 
-    # example key
-    tricount_key = sys.argv[1]
+    export_to = "csv"
+    raw = False
+    tricount_key = None
+
+    # Parsing arguments.
+    for arg in sys.argv[1:]:
+        if arg == "--csv":
+            export_to = "csv"
+        elif arg == "--help":
+            usage()
+        elif arg == "--raw":
+            raw = True
+        else:
+            if tricount_key is not None:
+                print("Multiple keys for tricount key", file=sys.stderr)
+                usage()
+            tricount_key = arg
 
     api = TricountAPI()
     api.authenticate()
     data = api.fetch_tricount_data(tricount_key)
 
     # save data to local file
-    with open(f'response_data_{tricount_key}.json', 'w') as f:
-        json.dump(data, f, indent=2)
+    if raw:
+        with open(f'response_data_{tricount_key}.json', 'w') as f:
+            json.dump(data, f, indent=2)
 
     handler = TricountHandler()
     tricount_title = handler.get_tricount_title(data)
 
     _, transactions = handler.parse_tricount_data(data)
 
-    handler.write_to_csv(transactions, file_name=f"Transactions {tricount_title}")
-
+    if export_to == "csv":
+        handler.write_to_csv(transactions, file_name=f"Transactions {tricount_title}")
