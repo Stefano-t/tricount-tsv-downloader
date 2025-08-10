@@ -2,7 +2,12 @@ import logging
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes
 import re
-from downloader import TricountAPI, get_tricount_title, parse_tricount_data, write_to_tsv
+from downloader import (
+    TricountAPI,
+    get_tricount_title,
+    parse_tricount_data,
+    write_to_tsv,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -27,13 +32,12 @@ def _get_csv(tricount_key):
     return destination
 
 
-async def echo(update: Update,
-               context: ContextTypes.DEFAULT_TYPE) -> None:
+async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     text = update.message.text
     print(text)
     # Extract URL.
     try:
-        if (match_ := URL_REGEX.match(text)):
+        if match_ := URL_REGEX.match(text):
             logger.info("found tricount link")
             assert len(match_.groups()) > 0
             tricount_url = match_.groups()[0]
@@ -49,7 +53,8 @@ async def echo(update: Update,
             logger.error("no tricout link found")
             response = "Can't find tricount url in text!"
             await context.bot.send_message(
-                chat_id=update.effective_chat.id, text=response,
+                chat_id=update.effective_chat.id,
+                text=response,
             )
     except Exception as e:
         logger.error(f"Exception: {e}")
@@ -60,14 +65,9 @@ async def echo(update: Update,
 
 
 def main() -> None:
-    application = (
-        ApplicationBuilder()
-        .token(open("./token").read().strip())
-        .build()
-    )
+    application = ApplicationBuilder().token(open("./token").read().strip()).build()
 
-    application.add_handler(
-        MessageHandler(filters.TEXT & (~filters.COMMAND), echo))
+    application.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), echo))
 
     application.run_polling()
 

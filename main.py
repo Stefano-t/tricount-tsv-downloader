@@ -1,14 +1,23 @@
 #!/usr/bin/env python3
-from downloader import TricountAPI, get_tricount_title, parse_tricount_data, write_to_tsv
+from downloader import (
+    TricountAPI,
+    get_tricount_title,
+    parse_tricount_data,
+    write_to_tsv,
+)
 import json
 
+
 def usage():
-    print(f"""USAGE: {sys.argv[0]} key [OPTIONS...]
+    print(
+        f"""USAGE: {sys.argv[0]} key [OPTIONS...]
 
     where OPTIONS are:
 
     --raw : store raw data from response
-    --help: print this text""", file=sys.stderr)
+    --help: print this text""",
+        file=sys.stderr,
+    )
     sys.exit(1)
 
 
@@ -39,7 +48,7 @@ if __name__ == "__main__":
 
     # Save data to local file.
     if raw:
-        with open(f'response_data_{tricount_key}.json', 'w') as f:
+        with open(f"response_data_{tricount_key}.json", "w") as f:
             json.dump(data, f, indent=2)
 
     tricount_title = get_tricount_title(data)
