@@ -1,49 +1,62 @@
-# Tricount API to Excel/CSV
+# Tricount API to TSV
 
-This script allows you to fetch all transactions and attachments from a shared Tricount and save them in a structured and user-friendly format.
+**NOTE**: this project is a fork of [https://github.com/MrNachoX/tricount-downloader], forked in August, 9, 2025.
+The core remains mostly the same, but with enhancements and fixes.
 
-## Features
-- Retrieve transactions and attachments from a shared Tricount.
-- Save transactions to an Excel file.
-- Save transactions to a CSV file.
-- Export transaction to Sesterce compatible CSV.
-- Download all attachments and organize them in a folder.
+LINK TO ORIGINAL README: [https://github.com/MrNachoX/tricount-downloader/blob/main/README.md].
 
-## Installation
+----------
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/MrNachoX/tricount-downloader.git
-   cd tricount-downloader
-   ```
-2. Create and activate virtual environment named venv (optional):
-   ```bash
-   python -m venv venv
-   source venv/bin/activate
-   ```
-3. Install the dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
+# Installation
 
-## Usage
+This project requires python >= 3.9. Install dependencies inside a virtualenv like so:
+```bash
+python3 -m venv venv
+source venv/bin/activate  # or activate.fish, or activate.zsh
+pip install -r requirements.txt
+```
 
-### Step 1: Obtain Your Tricount Key
-1. Open your Tricount.
-2. Share the Tricount via a public link.
-3. Copy the part after `https://tricount.com/`. For example, if your link is `https://tricount.com/tISWyMCgrIMgFuxudZ`, the key is `tISWyMCgrIMgFuxudZ`.
 
-### Step 2: Run the Script
-1. Replace the placeholder `tricount_key` in the script with your actual Tricount key.
+# Usage
 
-   (Optional) To export to Sesterce, uncomment (remove #) the line `` handler.write_to_sesterce_csv(...) ``
+This project can be used in two ways.
 
-   (Optional) To download attachments, uncomment (remove #) the line `` handler.download_attachments(...) ``
-2. Execute the script:
-   ```bash
-   python main.py
-   ```
+## Stand-alone application
 
-### Step 3: Outputs
-1. **Attachments Folder**: Attachments will be saved in a folder named `Attachments {Tricount Title}`.
-2. **CSV File**: Transactions will be saved in a file named `Transactions {Tricount Title}.csv`.
+After installing required dependencies, you can download a TSV of your Tricount using the `main.py` script.
+First of all, you need to retrieve you Tricount project key.
+Just share the Tricount in a chat or your notes to get the http link.
+The key is the last part of the URL, that is, `https://tricount.com/<your_tricount_key>`.
+
+Once we have the key, you can run the script like:
+
+```bash
+./main.py <your_tricount_key>
+```
+
+This will download a TSV file in the same directory where the script lives.
+The name of the TSV file is the name of the Tricount.
+
+If you want to get raw data in json format, supply the `--raw` flag.
+
+To get more information about the program, add the `--help` flag.
+
+## Telegram Bot
+
+The same functionalities are available as Telegram bot.
+The bot is called /Tricount Downloader/, and the bot username is `@tricount_download_bot`.
+
+The usage is pretty simple: just share the Tricount invite with this bot.
+It will download and attach the TSV file in the chat.
+
+
+# Author
+
+- Stefano Taverni
+- [Ignacio Muñoz MrNachoX](https://github.com/MrNachoX) (original author)
+
+
+# License
+
+The original code came with no licence at all.
+All new code is licenced under the [AGPL-3.0-or-later](./COPYING) licence.
