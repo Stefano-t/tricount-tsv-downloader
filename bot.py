@@ -32,7 +32,7 @@ def _get_csv(tricount_key):
     return destination
 
 
-async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def downloader(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     text = update.message.text
     print(text)
     # Extract URL.
@@ -67,7 +67,7 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 def main() -> None:
     application = ApplicationBuilder().token(open("./token").read().strip()).build()
 
-    application.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), echo))
+    application.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), downloader))
 
     application.run_polling()
 
