@@ -18,7 +18,13 @@
 
 import logging
 from telegram import Update
-from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes
+from telegram.ext import (
+    ApplicationBuilder,
+    MessageHandler,
+    filters,
+    ContextTypes,
+    CommandHandler,
+)
 import re
 from downloader import (
     TricountAPI,
@@ -32,6 +38,30 @@ logger = logging.getLogger(__name__)
 
 URL_REGEX = re.compile(r".*(https?://tricount\.com/[a-zA-Z0-9]+).*")
 tricount_client = None
+
+
+LICENSE_NOTICE = """
+This bot is free software. The code is released under the GNU Affero General
+Public License. You can view license at https://www.gnu.org/licenses/.
+
+To view its source code, just send the /source command to this bot.
+""".strip()
+
+START_MESSAGE = """
+Hi! This bot processes a Tricount link to get raw data and creates a TSV file
+for you! Just send a message with the Tricount link in it. The bot will take
+care of everything
+
+To check the code license, use the /license command.
+To see the source code, use /source command.
+"""
+
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=START_MESSAGE,
+    )
 
 
 def _get_csv(tricount_key):
@@ -82,10 +112,30 @@ async def downloader(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         )
 
 
+async def license(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=LICENSE_NOTICE,
+    )
+
+
+async def source(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text="Source code available at https://github.com/Stefano-t/tricount-tsv-downloader",
+    )
+
+
 def main() -> None:
     application = ApplicationBuilder().token(open("./token").read().strip()).build()
 
-    application.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), downloader))
+    application.add_handler(CommandHandler(["start", "help"], start))
+    application.add_handler(CommandHandler("license", license))
+    application.add_handler(CommandHandler("source", source))
+
+    application.add_handler(
+        MessageHandler(filters.TEXT & (~filters.COMMAND), downloader)
+    )
 
     application.run_polling()
 

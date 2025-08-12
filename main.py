@@ -35,7 +35,7 @@ def usage():
     --raw: store raw data from response
     --licence: print licence of this software
     --help: print this text""",
-    file=sys.stderr,
+        file=sys.stderr,
     )
     sys.exit(1)
 

@@ -49,6 +49,13 @@ The bot is called /Tricount Downloader/, and the bot username is `@tricount_down
 The usage is pretty simple: just share the Tricount invite with this bot.
 It will download and attach the TSV file in the chat.
 
+> **WARNING**
+>
+> Currently, I do not have a server to run this bot. This means that you will
+> likely find the bot unavailable. I do not plan to have a fully functional
+> server in the near future. Therefore, you can either use the stand-alone
+> version of this code or you are free to deploy your own instance of this bot.
+
 
 # Author
 
